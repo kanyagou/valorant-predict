@@ -100,14 +100,14 @@ const fmt=(m,v)=>m==='kda'?v.toFixed(2):m==='hs'?v.toFixed(0)+'%':Math.round(v);
 
 // 根據題目類型自動給予對應的特務圖片 (從官方公開API取得透明大圖)
 const qImg=m=>({
-  kda:'https://media.valorant-api.com/agents/f32f519e-46f3-8b15-ec32-bf85b0ba7347/displayicon.png', // 婕提 (KDA/擊殺)
-  kills:'https://media.valorant-api.com/agents/f32f519e-46f3-8b15-ec32-bf85b0ba7347/displayicon.png',
-  hs:'https://media.valorant-api.com/agents/2269a4d1-4ca3-d6ce-a92e-4c4804568cbd/displayicon.png', // 錢伯爾 (爆頭)
-  deaths:'https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/displayicon.png', // 聖祈 (死亡)
-  acs:'https://media.valorant-api.com/agents/a3bfb853-43b2-7238-a4f1-ad90e9e46bcc/displayicon.png', // 芮娜 (ACS/MVP)
-  fb:'https://media.valorant-api.com/agents/f94c3b30-42be-e959-8e18-362882261a50/displayicon.png' // 芮茲 (首殺)
-}[m]||'https://media.valorant-api.com/agents/8e253930-4c05-31dd-1b6c-968525494517/displayicon.png'); // 歐門 (預設)
-
+  kda:'https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/fullportrait.png', // 婕提 (KDA/擊殺)
+  kills:'https://media.valorant-api.com/agents/add6443a-41bd-e414-f6ad-e58d267f4e95/fullportrait.png',
+  hs:'https://media.valorant-api.com/agents/2269a4d1-4ca3-d6ce-a92e-4c4804568cbd/fullportrait.png', // 錢伯爾 (爆頭)
+  deaths:'https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/fullportrait.png', // 聖祈 (死亡)
+  acs:'https://media.valorant-api.com/agents/a3bfb853-43b2-7238-a4f1-ad90e9e46bcc/fullportrait.png', // 芮娜 (ACS)
+  fb:'https://media.valorant-api.com/agents/f94c3b30-42be-e959-8e18-362882261a50/fullportrait.png' // 芮茲 (首殺)
+}[m]||'https://media.valorant-api.com/agents/8e253930-4c05-31dd-1b6c-968525494517/fullportrait.png'); // 歐門 (預設)
+  
 const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
 let CFG,S=null,preds={},sig='',room=ls.get('vp_room')||'',me='',tab='pred',autoOn=false,note='';
 const def=()=>({region:'ap',total:{},last:null,done:[],
