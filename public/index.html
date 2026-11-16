@@ -5,57 +5,83 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>五排預測賽</title>
 <style>
-:root{--bg:#f4f1f0;--card:#fff;--ink:#1a2330;--mut:#667085;--line:#dcd6d3;--acc:#d6283a;--ok:#12805c;--okbg:#dff3ea;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1923;--card:#18252f;--ink:#ece8e1;--mut:#8b97a3;--line:#2b3a46;--acc:#ff4655;--ok:#4fd1a0;--okbg:#14352b}}
-:root[data-theme="dark"]{--bg:#0f1923;--card:#18252f;--ink:#ece8e1;--mut:#8b97a3;--line:#2b3a46;--acc:#ff4655;--ok:#4fd1a0;--okbg:#14352b}
-*{box-sizing:border-box}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
-main{max-width:860px;margin:0 auto;padding:20px 16px 60px}
-h1{font-size:28px;margin:0;letter-spacing:.04em;font-weight:900}
-h1 b{color:var(--acc)}
-.sub{color:var(--mut);margin:2px 0 18px}
-nav{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:18px;overflow-x:auto}
-nav button{background:none;border:0;color:var(--mut);padding:10px 14px;font:inherit;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
-nav button.on{color:var(--ink);border-bottom-color:var(--acc)}
-section{background:var(--card);border:1px solid var(--line);padding:16px;margin-bottom:14px;border-radius:4px}
-h2{font-size:16px;margin:0 0 10px}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
-input[type=text],input[type=number],select{background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:7px 9px;font:inherit;border-radius:3px;min-width:0}
-input[type=text]{flex:1 1 140px}
-input[type=number]{width:64px}
-button.b{background:var(--acc);color:#fff;border:0;padding:9px 16px;font:inherit;font-weight:700;cursor:pointer;border-radius:3px}
-button.g{background:none;color:var(--mut);border:1px solid var(--line);padding:6px 10px;font:inherit;cursor:pointer;border-radius:3px}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);padding:6px 12px;border-radius:99px;cursor:pointer;margin:0 6px 6px 0}
-.chip.on{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,transparent);font-weight:700}
-.chip input{display:none}
-.mut{color:var(--mut);font-size:13px}
-.q{border-top:1px solid var(--line);padding:12px 0}
-.q:first-of-type{border-top:0}
-.opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.opt{border:1px solid var(--line);padding:5px 11px;cursor:pointer;background:none;color:var(--ink);font:inherit;border-radius:3px}
-.opt.sel{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
-.opt.win{outline:2px solid var(--ok)}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
-th:first-child,td:first-child{text-align:left}
-th{color:var(--mut);font-weight:600}
-.wrap{overflow-x:auto}
-.hit{background:var(--okbg);color:var(--ok);font-weight:700;padding:1px 8px;border-radius:3px}
-.score{font-size:22px;font-weight:900;color:var(--acc)}
-.lb{display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--line)}
-.lb:first-of-type{border-top:0}
-.rank{width:26px;font-weight:900;color:var(--mut)}
-.lb .n{flex:1;font-weight:700}
-.note{border-left:3px solid var(--acc);padding:6px 12px;color:var(--mut);font-size:13px;background:var(--bg);margin-top:10px}
+:root {
+  --bg: #0f1923; --card: #1f2b38; --card-hover: #263544;
+  --ink: #ece8e1; --mut: #8b97a3; --line: #2b3a46;
+  --acc: #ff4655; --acc-hover: #e03c49;
+  --ok: #4fd1a0; --okbg: #14352b; --gold: #f0e6d2;
+  box-sizing: border-box; padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.6 "Noto Sans TC","PingFang TC",system-ui,sans-serif; }
+main { max-width: 900px; margin: 0 auto; padding: 24px 16px 80px; }
+
+/* 頭部與導覽列 */
+h1 { font-size: 32px; margin: 0; letter-spacing: 0.05em; font-weight: 900; text-transform: uppercase; }
+h1 b { color: var(--acc); }
+.sub { color: var(--mut); margin: 4px 0 24px; font-size: 14px; }
+nav { display: flex; gap: 8px; border-bottom: 2px solid var(--line); margin-bottom: 24px; overflow-x: auto; padding-bottom: -2px; }
+nav button { background: none; border: 0; color: var(--mut); padding: 12px 16px; font-size: 15px; font-weight: 700; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap; transition: 0.2s; }
+nav button:hover { color: var(--ink); }
+nav button.on { color: var(--ink); border-bottom-color: var(--acc); }
+
+/* 通用區塊與表單 */
+section { background: var(--card); border: 1px solid var(--line); padding: 20px; margin-bottom: 16px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+h2 { font-size: 18px; margin: 0 0 16px; display: flex; align-items: center; gap: 8px; }
+h2::before { content: ''; display: block; width: 4px; height: 18px; background: var(--acc); border-radius: 2px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+input[type=text], input[type=number], select { background: var(--bg); color: var(--ink); border: 1px solid var(--line); padding: 10px 12px; font: inherit; border-radius: 4px; min-width: 0; outline: none; transition: 0.2s; }
+input[type=text]:focus, select:focus { border-color: var(--acc); }
+input[type=text] { flex: 1 1 140px; }
+input[type=number] { width: 70px; }
+
+/* 按鈕樣式 */
+button.b { background: var(--acc); color: #fff; border: 0; padding: 10px 20px; font: inherit; font-weight: 700; cursor: pointer; border-radius: 4px; transition: 0.2s; text-transform: uppercase; }
+button.b:hover { background: var(--acc-hover); transform: translateY(-1px); }
+button.g { background: transparent; color: var(--mut); border: 1px solid var(--mut); padding: 8px 14px; font: inherit; cursor: pointer; border-radius: 4px; transition: 0.2s; }
+button.g:hover { border-color: var(--ink); color: var(--ink); }
+
+/* 世界賽 Pick'em 卡片排版 */
+.pick-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px; }
+.pick-card { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.pick-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--line); transition: 0.3s; }
+.pick-card:hover::after { background: var(--mut); }
+.pick-card.answered::after { background: var(--acc); }
+.pick-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.pick-title { font-weight: 700; font-size: 16px; line-height: 1.4; }
+.pick-pts { background: rgba(255, 70, 85, 0.1); color: var(--acc); font-size: 12px; font-weight: 900; padding: 2px 8px; border-radius: 4px; }
+.pick-opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.pick-opt { background: var(--card); border: 1px solid var(--line); padding: 10px; cursor: pointer; color: var(--mut); font: inherit; font-weight: 600; border-radius: 4px; transition: 0.2s; text-align: center; }
+.pick-opt:hover { background: var(--card-hover); color: var(--ink); border-color: var(--mut); }
+.pick-opt.sel { background: var(--acc); border-color: var(--acc); color: #fff; box-shadow: 0 0 12px rgba(255, 70, 85, 0.4); }
+
+/* 管理題目區塊 */
+.admin-q { background: var(--bg); border: 1px solid var(--line); padding: 16px; border-radius: 6px; margin-bottom: 12px; }
+.admin-add { border: 2px dashed var(--line); background: transparent; text-align: center; padding: 20px; cursor: pointer; border-radius: 6px; color: var(--mut); font-weight: 700; transition: 0.2s; }
+.admin-add:hover { border-color: var(--acc); color: var(--acc); background: rgba(255, 70, 85, 0.05); }
+
+/* 小標籤與表格 */
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); padding: 6px 12px; border-radius: 99px; cursor: pointer; margin: 0 6px 6px 0; font-size: 14px; }
+.chip.on { border-color: var(--acc); background: rgba(255, 70, 85, 0.1); font-weight: 700; color: var(--ink); }
+.chip input { display: none; }
+.mut { color: var(--mut); font-size: 13px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 10px 8px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { color: var(--mut); font-weight: 600; }
+.wrap { overflow-x: auto; }
+.hit { background: var(--okbg); color: var(--ok); font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+.score { font-size: 20px; font-weight: 900; color: var(--acc); }
+.lb { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.lb:last-child { border-bottom: 0; }
+.rank { width: 24px; font-weight: 900; color: var(--mut); font-size: 16px; }
+.lb .n { flex: 1; font-weight: 700; font-size: 16px; }
 </style>
 </head>
 <body>
 <main>
 <h1>五排<b>預測賽</b></h1>
-<p class="sub">開打前先預測誰最強，打完用數據對答案。</p>
+<p class="sub">Pick'em Style - 鎖定你的答案，用數據說話。</p>
 <nav id="nav"></nav>
 <div id="view"></div>
 </main>
@@ -64,7 +90,7 @@ const M={kda:'KDA',hs:'爆頭率',kills:'擊殺數',acs:'ACS',fb:'首殺數',dea
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(m,v)=>m==='kda'?v.toFixed(2):m==='hs'?v.toFixed(0)+'%':Math.round(v);
 const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
-let CFG,S=null,preds={},sig='',room=ls.get('vp_room')||'',me='',tab='setup',autoOn=false,note='';
+let CFG,S=null,preds={},sig='',room=ls.get('vp_room')||'',me='',tab='pred',autoOn=false,note='';
 const def=()=>({region:'ap',total:{},last:null,done:[],
  host:'',players:[],
  qs:[{id:'q1',text:'誰的 KDA 最高?',m:'kda',d:'max',pts:10,on:true},{id:'q2',text:'誰的爆頭率最高?',m:'hs',d:'max',pts:10,on:true},
@@ -91,6 +117,7 @@ async function enter(code){
   room=code;ls.set('vp_room',room);me=ls.get('vp_me_'+room)||'';note='';
   await rest('rooms',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({code:room,state:def()})});
   await pull(true);
+  if(joined()) tab = 'pred'; // 進入房間且已加入，直接看預測
  }catch(e){S=null;note='連不上資料庫:'+e.message}
  render();
 }
@@ -103,12 +130,12 @@ async function joinRoom(name){
    await pull(true);
    if(S.players.some(p=>p.id===id))break;
    const ex=S.players.find(p=>p.name.trim().toLowerCase()===name.toLowerCase());
-   if(ex){me=ex.id;ls.set('vp_me_'+room,me);note='';render();return}
+   if(ex){me=ex.id;ls.set('vp_me_'+room,me);note='';tab='pred';render();return}
    if(S.players.length>=10){note='房間已滿。';render();return}
    S.players.push({id,name,on:true});if(!S.host)S.host=id;
    await push();
   }
-  await pull(true);me=id;ls.set('vp_me_'+room,me);note='';
+  await pull(true);me=id;ls.set('vp_me_'+room,me);note='';tab='pred';
  }catch(e){note='加入失敗:'+e.message}
  render();
 }
@@ -123,44 +150,92 @@ async function check(sim){
 function lb(map,ids){
  return [...ids].sort((a,b)=>(map[b]||0)-(map[a]||0)).map((id,i)=>`<div class="lb"><span class="rank">${i+1}</span><span class="n">${nm(id)}</span><span class="score">${map[id]||0}</span></div>`).join('')||'<p class="mut">還沒有分數。</p>';
 }
-const tabs={setup:'玩家',qs:'題目',pred:'預測',result:'結算'};
+
+// 調整了 Tab 的順序與名稱，讓預測擺在第一位
+const tabs={pred:'我的預測', result:'賽事結算', setup:'房間大廳', qs:'題目管理'};
 function render(){
  nav.innerHTML=joined()?Object.entries(tabs).map(([k,v])=>`<button class="${k===tab?'on':''}" data-t="${k}">${v}</button>`).join(''):'';
  view.innerHTML=!S?views.join():!joined()?views.me():views[tab]();
 }
 const views={
- join(){return `<section><h2>進入房間</h2><div class="row"><input type="text" id="rc" value="${esc(room)}" placeholder="房間代碼,例如 lulu-5stack" aria-label="房間代碼"><button class="b" data-a="enter">進入</button></div>
-  <p class="mut">第一次輸入的代碼會自動建立房間。把代碼或連結傳給朋友,就能一起預測。</p><p class="mut">${esc(note)}</p></section>`},
- me(){return `<section><h2>你是誰?</h2><div class="row"><input type="text" id="rid" placeholder="你的 Riot ID,例如 小明#TW1" aria-label="Riot ID"><button class="b" data-a="join">加入</button></div>
-  <p class="mut">輸入你自己的 Riot ID(名稱#Tag),要跟遊戲裡一致。加入後你只能修改自己的資料。</p><p class="mut">${esc(note)}</p></section>`},
- setup(){const host=!S.host||S.host===me;return `<section><h2>房間 ${esc(room)}</h2><p class="mut">分享連結:${esc(location.origin)}/?room=${esc(room)}</p><div class="row"><button class="g" data-a="leave">換房間</button><button class="g" data-a="quit">退出這個房間</button></div></section>
-  <section><h2>房間成員</h2>${S.players.map((p,i)=>p.id===me?`<div class="row"><input type="text" value="${esc(p.name)}" data-name="${i}" aria-label="我的 Riot ID"><label class="chip ${p.on?'on':''}"><input type="checkbox" data-on="${i}" ${p.on?'checked':''}>我這場有下場</label></div>`:`<div class="row"><span style="flex:1">${esc(p.name)}</span><span class="mut">${p.on?'有下場':'未下場'}</span>${host?`<button class="g" data-rm="${i}">移除</button>`:''}</div>`).join('')||'<p class="mut">還沒有人加入。</p>'}
-  <p class="mut">只有勾「有下場」的人可以預測,也只有他們會被拿來比較。目前 ${act().length} 人。</p>
-  ${host?`<div class="row"><span class="mut">地區</span><select data-region="1" aria-label="地區">${['ap','na','eu','kr','br','latam'].map(r=>`<option ${S.region===r?'selected':''}>${r}</option>`).join('')}</select><span class="mut">台灣選 ap</span></div>`:''}</section>
-  <section><h2>累積總分</h2>${lb(S.total,S.players.map(p=>p.id))}${host?`<div class="row" style="margin-top:10px"><button class="g" data-a="reset">清空這個房間</button></div>`:''}</section>`},
- qs(){if(S.host&&S.host!==me)return `<section><h2>預測題目</h2>${S.qs.filter(q=>q.on).map(q=>`<div class="q">${esc(q.text)} <span class="mut">(${q.pts} 分)</span></div>`).join('')}<p class="mut">題目由房主設定。</p></section>`;return `<section><h2>預測題目</h2>${S.qs.map((q,i)=>`<div class="q"><div class="row">
-  <label class="chip ${q.on?'on':''}"><input type="checkbox" data-qon="${i}" ${q.on?'checked':''}>啟用</label><input type="text" value="${esc(q.text)}" data-qtext="${i}" aria-label="題目文字"></div>
-  <div class="row"><span class="mut">比較</span><select data-qm="${i}">${Object.entries(M).map(([k,v])=>`<option value="${k}" ${q.m===k?'selected':''}>${v}</option>`).join('')}</select>
-  <select data-qd="${i}"><option value="max" ${q.d==='max'?'selected':''}>最高</option><option value="min" ${q.d==='min'?'selected':''}>最低</option></select>
-  <span class="mut">答對得</span><input type="number" min="1" max="100" value="${q.pts}" data-qp="${i}" aria-label="分數"><span class="mut">分</span><button class="g" data-del="${i}">刪除</button></div></div>`).join('')}
-  <div class="row" style="margin-top:8px"><button class="b" data-a="addq">新增題目</button></div></section>`},
+ join(){return `<section><h2>進入預測大廳</h2><div class="row"><input type="text" id="rc" value="${esc(room)}" placeholder="輸入房間代碼 (例: lulu-5stack)" aria-label="房間代碼"><button class="b" data-a="enter">進入房間</button></div>
+  <p class="mut">第一次輸入的代碼會自動建立專屬房間，把代碼丟給朋友就能一起玩。</p><p style="color:var(--acc)">${esc(note)}</p></section>`},
+ me(){return `<section><h2>建立你的身分</h2><div class="row"><input type="text" id="rid" placeholder="你的 Riot ID (例: 小明#TW1)" aria-label="Riot ID"><button class="b" data-a="join">鎖定身分</button></div>
+  <p class="mut">請輸入遊戲內完整名稱，系統將以此抓取你的戰績。</p><p style="color:var(--acc)">${esc(note)}</p></section>`},
+ 
+ // === 預測頁面 (卡片化設計) ===
  pred(){
   const ps=act(),qs=S.qs.filter(q=>q.on);
-  if(ps.length<2||!qs.length)return `<section><h2>還不能預測</h2><p>請先在「玩家」勾選至少 2 位下場的人,並在「題目」啟用至少 1 題。</p></section>`;
-  if(!ps.some(p=>p.id===me))return `<section><h2>你這場沒有下場</h2><p>到「玩家」頁勾選「我這場有下場」才能預測。</p></section>`;
+  if(ps.length<2||!qs.length)return `<section><h2>等待設定中</h2><p class="mut">請房主至「房間大廳」勾選至少 2 位玩家，並在「題目管理」啟用題目。</p></section>`;
+  if(!ps.some(p=>p.id===me))return `<section><h2>你這場未參戰</h2><p class="mut">請至「房間大廳」勾選「我這場有下場」才能參與預測。</p></section>`;
   const mine=preds[me]||{};
-  return `<section><h2>${nm(me)} 的預測</h2>${qs.map(q=>`<div class="q"><div>${esc(q.text)} <span class="mut">(${q.pts} 分)</span></div><div class="opts">
-   ${ps.map(o=>`<button class="opt ${mine[q.id]===o.id?'sel':''}" data-q="${q.id}" data-o="${o.id}">${esc(o.name.split('#')[0])}</button>`).join('')}</div></div>`).join('')}
-   <p class="mut">已送出預測:${ps.filter(p=>preds[p.id]).map(p=>nm(p.id)).join('、')||'還沒有人'}</p></section>
-   <section><div class="row"><button class="b" data-a="check">檢查比賽並結算</button><label class="chip ${autoOn?'on':''}"><input type="checkbox" data-auto="1" ${autoOn?'checked':''}>每分鐘自動檢查</label><button class="g" data-a="sim">模擬結算</button></div>
-   <p class="mut" id="msg">只會結算在第一個預測送出之後開打的比賽。</p></section>`},
+  
+  return `<section style="background:transparent; border:0; padding:0; box-shadow:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h2 style="margin:0;">水晶球預測</h2>
+      <span class="mut">已提交: ${ps.filter(p=>preds[p.id]).map(p=>nm(p.id)).join('、')||'無'}</span>
+    </div>
+    <div class="pick-grid">
+    ${qs.map(q=>{
+      const isAns = mine[q.id] ? 'answered' : '';
+      return `
+      <div class="pick-card ${isAns}">
+        <div class="pick-header">
+          <div class="pick-title">${esc(q.text)}</div>
+          <div class="pick-pts">${q.pts} PTS</div>
+        </div>
+        <div class="pick-opts">
+         ${ps.map(o=>`<button class="pick-opt ${mine[q.id]===o.id?'sel':''}" data-q="${q.id}" data-o="${o.id}">${esc(o.name.split('#')[0])}</button>`).join('')}
+        </div>
+      </div>`
+    }).join('')}
+    </div>
+   </section>
+   <section style="margin-top:24px;">
+    <div class="row"><button class="b" data-a="check">結算最新比賽</button><label class="chip ${autoOn?'on':''}"><input type="checkbox" data-auto="1" ${autoOn?'checked':''}>自動偵測</label><button class="g" data-a="sim">模擬測試</button></div>
+    <p class="mut" id="msg">送出預測後，系統只會結算在那之後開打的比賽。</p>
+   </section>`
+ },
+
+ // === 題目管理頁面 (獨立出來) ===
+ qs(){
+  if(S.host&&S.host!==me)return `<section><h2>題目清單</h2>${S.qs.filter(q=>q.on).map(q=>`<div class="admin-q"><b>${esc(q.text)}</b> <span class="mut">(${q.pts} 分)</span></div>`).join('')}<p class="mut">⚠️ 只有房主 (${nm(S.host)}) 可以編輯題目。</p></section>`;
+  return `<section>
+   <h2>管理預測題目</h2>
+   <p class="mut" style="margin-bottom:16px;">自訂你們專屬的預測項目與配分。</p>
+   ${S.qs.map((q,i)=>`
+   <div class="admin-q">
+     <div class="row" style="margin-bottom:12px;">
+       <label class="chip ${q.on?'on':''}"><input type="checkbox" data-qon="${i}" ${q.on?'checked':''}>啟用</label>
+       <input type="text" value="${esc(q.text)}" data-qtext="${i}" aria-label="題目文字" style="font-weight:bold;">
+     </div>
+     <div class="row">
+       <span class="mut">比對欄位</span>
+       <select data-qm="${i}">${Object.entries(M).map(([k,v])=>`<option value="${k}" ${q.m===k?'selected':''}>${v}</option>`).join('')}</select>
+       <select data-qd="${i}"><option value="max" ${q.d==='max'?'selected':''}>最高</option><option value="min" ${q.d==='min'?'selected':''}>最低</option></select>
+       <span class="mut">得分</span>
+       <input type="number" min="1" max="100" value="${q.pts}" data-qp="${i}">
+       <div style="flex:1"></div>
+       <button class="g" data-del="${i}" style="color:var(--acc); border-color:transparent;">刪除題目</button>
+     </div>
+   </div>`).join('')}
+   <div class="admin-add" data-a="addq">+ 新增一道預測題目</div>
+  </section>`
+ },
+
+ // === 其他頁面維持排版優化 ===
+ setup(){const host=!S.host||S.host===me;return `<section><h2>大廳資訊 (${esc(room)})</h2><div class="row"><input type="text" value="${esc(location.origin)}/?room=${esc(room)}" readonly onclick="this.select()" style="color:var(--mut)"><button class="g" data-a="leave">切換房間</button><button class="g" data-a="quit">退出房間</button></div></section>
+  <section><h2>參戰名單</h2>${S.players.map((p,i)=>p.id===me?`<div class="row" style="background:var(--bg); padding:8px; border-radius:4px;"><input type="text" value="${esc(p.name)}" data-name="${i}"><label class="chip ${p.on?'on':''}"><input type="checkbox" data-on="${i}" ${p.on?'checked':''}>我這場有打</label></div>`:`<div class="row" style="padding:8px;"><span style="flex:1; font-weight:bold;">${esc(p.name)}</span><span class="mut">${p.on?'🟢 參戰中':'⚪ 休息'}</span>${host?`<button class="g" data-rm="${i}">踢除</button>`:''}</div>`).join('')||'<p class="mut">尚無玩家。</p>'}
+  ${host?`<div class="row" style="margin-top:16px; border-top:1px solid var(--line); padding-top:16px;"><span class="mut">伺服器:</span><select data-region="1">${['ap','na','eu','kr','br','latam'].map(r=>`<option ${S.region===r?'selected':''}>${r}</option>`).join('')}</select></div>`:''}</section>
+  <section><h2>房間總積分</h2>${lb(S.total,S.players.map(p=>p.id))}${host?`<div style="margin-top:16px;"><button class="g" data-a="reset">⚠️ 重置所有分數</button></div>`:''}</section>`},
+ 
  result(){
-  const L=S.last;if(!L)return `<section><h2>還沒有結算</h2><p>大家送出預測、打完比賽後,到「預測」頁按結算。</p></section>`;
-  return `<section><h2>本場數據</h2><div class="wrap"><table><tr><th>玩家</th><th>K</th><th>D</th><th>A</th><th>KDA</th><th>爆頭率</th><th>ACS</th><th>首殺</th></tr>
-  ${L.ids.map(id=>{const s=L.st[id];return `<tr><td>${nm(id)}</td><td>${s.k}</td><td>${s.d}</td><td>${s.a}</td><td>${s.kda.toFixed(2)}</td><td>${s.hs.toFixed(0)}%</td><td>${Math.round(s.acs)}</td><td>${s.fb}</td></tr>`}).join('')}</table></div></section>
-  <section><h2>答案與得分</h2>${L.res.map(r=>`<div class="q"><div>${esc(r.q.text)}</div><div class="mut">答案:<b style="color:var(--ink)">${r.win.map(nm).join('、')}</b>(${M[r.q.m]} ${fmt(r.q.m,r.val)})</div>
-   <div style="margin-top:4px">${r.hit.length?r.hit.map(id=>`<span class="hit">${nm(id)} +${r.q.pts}</span> `).join(''):'<span class="mut">沒有人答對</span>'}</div></div>`).join('')}</section>
-  <section><h2>本場分數</h2>${lb(L.sc,L.ids)}</section><section><h2>累積總分</h2>${lb(S.total,S.players.map(p=>p.id))}</section>`}
+  const L=S.last;if(!L)return `<section><h2>尚無賽事資料</h2><p class="mut">請先完成預測並等待比賽結束後點擊結算。</p></section>`;
+  return `<section><h2>最新戰績數據</h2><div class="wrap"><table><tr><th>玩家</th><th>K</th><th>D</th><th>A</th><th>KDA</th><th>爆頭率</th><th>ACS</th><th>首殺</th></tr>
+  ${L.ids.map(id=>{const s=L.st[id];return `<tr><td><b>${nm(id)}</b></td><td>${s.k}</td><td>${s.d}</td><td>${s.a}</td><td>${s.kda.toFixed(2)}</td><td>${s.hs.toFixed(0)}%</td><td>${Math.round(s.acs)}</td><td>${s.fb}</td></tr>`}).join('')}</table></div></section>
+  <section><h2>預測結果</h2>${L.res.map(r=>`<div class="admin-q"><div style="font-weight:bold; margin-bottom:4px;">${esc(r.q.text)}</div><div class="mut" style="margin-bottom:8px;">正確答案: <b style="color:var(--acc)">${r.win.map(nm).join('、')}</b> (${M[r.q.m]} ${fmt(r.q.m,r.val)})</div>
+   <div>${r.hit.length?r.hit.map(id=>`<span class="hit">${nm(id)} +${r.q.pts}</span> `).join(''):'<span class="mut">無人命中</span>'}</div></div>`).join('')}</section>
+  <section><h2>本局獲得積分</h2>${lb(L.sc,L.ids)}</section>`}
 };
 
 document.addEventListener('click',async e=>{
@@ -172,11 +247,11 @@ document.addEventListener('click',async e=>{
  else if(d.del){S.qs.splice(+d.del,1);push()}
  else if(d.rm){S.players.splice(+d.rm,1);push()}
  else if(d.a==='join'){await joinRoom(document.getElementById('rid').value);return}
- else if(d.a==='quit'){if(!confirm('退出這個房間?'))return;S.players=S.players.filter(p=>p.id!==me);me='';ls.set('vp_me_'+room,'');push()}
+ else if(d.a==='quit'){if(!confirm('確定退出房間?'))return;S.players=S.players.filter(p=>p.id!==me);me='';ls.set('vp_me_'+room,'');push()}
  else if(d.a==='enter'){await enter(document.getElementById('rc').value);return}
  else if(d.a==='leave'){S=null;room='';sig='';ls.set('vp_room','')}
- else if(d.a==='addq'){S.qs.push({id:'q'+Date.now(),text:'新題目:誰的 KDA 最高?',m:'kda',d:'max',pts:10,on:true});push()}
- else if(d.a==='reset'){if(!confirm('確定清空這個房間的設定與分數?'))return;S=def();await push();await rest(`preds?room=eq.${room}`,{method:'DELETE'});preds={}}
+ else if(d.a==='addq'){S.qs.push({id:'q'+Date.now(),text:'新題目',m:'kda',d:'max',pts:10,on:true});push()}
+ else if(d.a==='reset'){if(!confirm('⚠️ 確定清空房間所有設定與分數?'))return;S=def();await push();await rest(`preds?room=eq.${room}`,{method:'DELETE'});preds={}}
  else if(d.a==='check'){check(false);return}
  else if(d.a==='sim'){check(true);return}
  render();
