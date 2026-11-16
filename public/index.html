@@ -30,8 +30,8 @@ section { background: var(--card); border: 1px solid var(--line); padding: 20px;
 h2 { font-size: 18px; margin: 0 0 16px; display: flex; align-items: center; gap: 8px; }
 h2::before { content: ''; display: block; width: 4px; height: 18px; background: var(--acc); border-radius: 2px; }
 .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
-input[type=text], input[type=number], select { background: var(--bg); color: var(--ink); border: 1px solid var(--line); padding: 10px 12px; font: inherit; border-radius: 4px; min-width: 0; outline: none; transition: 0.2s; }
-input[type=text]:focus, select:focus { border-color: var(--acc); }
+input[type=text], input[type=number], select.std { background: var(--bg); color: var(--ink); border: 1px solid var(--line); padding: 10px 12px; font: inherit; border-radius: 4px; min-width: 0; outline: none; transition: 0.2s; }
+input[type=text]:focus, select.std:focus { border-color: var(--acc); }
 input[type=text] { flex: 1 1 140px; }
 input[type=number] { width: 70px; }
 
@@ -41,19 +41,27 @@ button.b:hover { background: var(--acc-hover); transform: translateY(-1px); }
 button.g { background: transparent; color: var(--mut); border: 1px solid var(--mut); padding: 8px 14px; font: inherit; cursor: pointer; border-radius: 4px; transition: 0.2s; }
 button.g:hover { border-color: var(--ink); color: var(--ink); }
 
-/* 世界賽 Pick'em 卡片排版 */
-.pick-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px; }
-.pick-card { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+/* 世界賽 Pick'em 卡片排版 (含圖片與下拉選單) */
+.pick-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 16px; }
+.pick-card { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; position: relative; overflow: hidden; transition: 0.3s; }
 .pick-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--line); transition: 0.3s; }
 .pick-card:hover::after { background: var(--mut); }
-.pick-card.answered::after { background: var(--acc); }
-.pick-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-.pick-title { font-weight: 700; font-size: 16px; line-height: 1.4; }
-.pick-pts { background: rgba(255, 70, 85, 0.1); color: var(--acc); font-size: 12px; font-weight: 900; padding: 2px 8px; border-radius: 4px; }
-.pick-opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-.pick-opt { background: var(--card); border: 1px solid var(--line); padding: 10px; cursor: pointer; color: var(--mut); font: inherit; font-weight: 600; border-radius: 4px; transition: 0.2s; text-align: center; }
-.pick-opt:hover { background: var(--card-hover); color: var(--ink); border-color: var(--mut); }
-.pick-opt.sel { background: var(--acc); border-color: var(--acc); color: #fff; box-shadow: 0 0 12px rgba(255, 70, 85, 0.4); }
+.pick-card.answered::after { background: var(--acc); box-shadow: 0 0 15px rgba(255, 70, 85, 0.4); }
+
+/* 特務圖片區塊 */
+.pick-img { height: 120px; background: linear-gradient(to top, rgba(255, 70, 85, 0.08), transparent); margin: -16px -16px 16px -16px; display: flex; justify-content: center; align-items: flex-end; overflow: hidden; border-bottom: 1px solid var(--line); }
+.pick-img img { height: 115%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.pick-card:hover .pick-img img { transform: scale(1.08) translateY(-4px); }
+
+.pick-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.pick-title { font-weight: 900; font-size: 16px; line-height: 1.4; letter-spacing: 0.02em; }
+.pick-pts { background: rgba(255, 70, 85, 0.15); color: var(--acc); font-size: 12px; font-weight: 900; padding: 2px 8px; border-radius: 4px; }
+
+/* 專屬下拉式選單 */
+.pick-select { width: 100%; padding: 12px 14px; font-size: 16px; font-weight: 700; background: var(--card); color: var(--ink); border: 2px solid var(--line); border-radius: 6px; cursor: pointer; transition: 0.2s; appearance: none; outline: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b97a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; }
+.pick-select:hover { border-color: var(--mut); }
+.pick-select:focus { border-color: var(--acc); box-shadow: 0 0 0 2px rgba(255, 70, 85, 0.2); }
+.pick-card.answered .pick-select { border-color: var(--acc); color: var(--acc); background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ff4655' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); }
 
 /* 管理題目區塊 */
 .admin-q { background: var(--bg); border: 1px solid var(--line); padding: 16px; border-radius: 6px; margin-bottom: 12px; }
@@ -89,6 +97,17 @@ th { color: var(--mut); font-weight: 600; }
 const M={kda:'KDA',hs:'爆頭率',kills:'擊殺數',acs:'ACS',fb:'首殺數',deaths:'死亡數'};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(m,v)=>m==='kda'?v.toFixed(2):m==='hs'?v.toFixed(0)+'%':Math.round(v);
+
+// 根據題目類型自動給予對應的特務圖片 (從官方公開API取得透明大圖)
+const qImg=m=>({
+  kda:'https://media.valorant-api.com/agents/f32f519e-46f3-8b15-ec32-bf85b0ba7347/displayicon.png', // 婕提 (KDA/擊殺)
+  kills:'https://media.valorant-api.com/agents/f32f519e-46f3-8b15-ec32-bf85b0ba7347/displayicon.png',
+  hs:'https://media.valorant-api.com/agents/2269a4d1-4ca3-d6ce-a92e-4c4804568cbd/displayicon.png', // 錢伯爾 (爆頭)
+  deaths:'https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/displayicon.png', // 聖祈 (死亡)
+  acs:'https://media.valorant-api.com/agents/a3bfb853-43b2-7238-a4f1-ad90e9e46bcc/displayicon.png', // 芮娜 (ACS/MVP)
+  fb:'https://media.valorant-api.com/agents/f94c3b30-42be-e959-8e18-362882261a50/displayicon.png' // 芮茲 (首殺)
+}[m]||'https://media.valorant-api.com/agents/8e253930-4c05-31dd-1b6c-968525494517/displayicon.png'); // 歐門 (預設)
+
 const ls={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
 let CFG,S=null,preds={},sig='',room=ls.get('vp_room')||'',me='',tab='pred',autoOn=false,note='';
 const def=()=>({region:'ap',total:{},last:null,done:[],
@@ -117,7 +136,7 @@ async function enter(code){
   room=code;ls.set('vp_room',room);me=ls.get('vp_me_'+room)||'';note='';
   await rest('rooms',{method:'POST',headers:{Prefer:'resolution=ignore-duplicates'},body:JSON.stringify({code:room,state:def()})});
   await pull(true);
-  if(joined()) tab = 'pred'; // 進入房間且已加入，直接看預測
+  if(joined()) tab = 'pred'; 
  }catch(e){S=null;note='連不上資料庫:'+e.message}
  render();
 }
@@ -151,7 +170,6 @@ function lb(map,ids){
  return [...ids].sort((a,b)=>(map[b]||0)-(map[a]||0)).map((id,i)=>`<div class="lb"><span class="rank">${i+1}</span><span class="n">${nm(id)}</span><span class="score">${map[id]||0}</span></div>`).join('')||'<p class="mut">還沒有分數。</p>';
 }
 
-// 調整了 Tab 的順序與名稱，讓預測擺在第一位
 const tabs={pred:'我的預測', result:'賽事結算', setup:'房間大廳', qs:'題目管理'};
 function render(){
  nav.innerHTML=joined()?Object.entries(tabs).map(([k,v])=>`<button class="${k===tab?'on':''}" data-t="${k}">${v}</button>`).join(''):'';
@@ -163,7 +181,7 @@ const views={
  me(){return `<section><h2>建立你的身分</h2><div class="row"><input type="text" id="rid" placeholder="你的 Riot ID (例: 小明#TW1)" aria-label="Riot ID"><button class="b" data-a="join">鎖定身分</button></div>
   <p class="mut">請輸入遊戲內完整名稱，系統將以此抓取你的戰績。</p><p style="color:var(--acc)">${esc(note)}</p></section>`},
  
- // === 預測頁面 (卡片化設計) ===
+ // === 預測頁面 (圖片 + 下拉選單) ===
  pred(){
   const ps=act(),qs=S.qs.filter(q=>q.on);
   if(ps.length<2||!qs.length)return `<section><h2>等待設定中</h2><p class="mut">請房主至「房間大廳」勾選至少 2 位玩家，並在「題目管理」啟用題目。</p></section>`;
@@ -180,13 +198,15 @@ const views={
       const isAns = mine[q.id] ? 'answered' : '';
       return `
       <div class="pick-card ${isAns}">
+        <div class="pick-img"><img src="${qImg(q.m)}" alt="Agent"></div>
         <div class="pick-header">
           <div class="pick-title">${esc(q.text)}</div>
           <div class="pick-pts">${q.pts} PTS</div>
         </div>
-        <div class="pick-opts">
-         ${ps.map(o=>`<button class="pick-opt ${mine[q.id]===o.id?'sel':''}" data-q="${q.id}" data-o="${o.id}">${esc(o.name.split('#')[0])}</button>`).join('')}
-        </div>
+        <select class="pick-select" data-q="${q.id}">
+          <option value="" disabled ${!mine[q.id] ? 'selected' : ''}>▼ 點擊鎖定玩家...</option>
+          ${ps.map(o=>`<option value="${o.id}" ${mine[q.id]===o.id?'selected':''}>${esc(o.name.split('#')[0])}</option>`).join('')}
+        </select>
       </div>`
     }).join('')}
     </div>
@@ -197,7 +217,7 @@ const views={
    </section>`
  },
 
- // === 題目管理頁面 (獨立出來) ===
+ // === 題目管理頁面 ===
  qs(){
   if(S.host&&S.host!==me)return `<section><h2>題目清單</h2>${S.qs.filter(q=>q.on).map(q=>`<div class="admin-q"><b>${esc(q.text)}</b> <span class="mut">(${q.pts} 分)</span></div>`).join('')}<p class="mut">⚠️ 只有房主 (${nm(S.host)}) 可以編輯題目。</p></section>`;
   return `<section>
@@ -211,8 +231,8 @@ const views={
      </div>
      <div class="row">
        <span class="mut">比對欄位</span>
-       <select data-qm="${i}">${Object.entries(M).map(([k,v])=>`<option value="${k}" ${q.m===k?'selected':''}>${v}</option>`).join('')}</select>
-       <select data-qd="${i}"><option value="max" ${q.d==='max'?'selected':''}>最高</option><option value="min" ${q.d==='min'?'selected':''}>最低</option></select>
+       <select class="std" data-qm="${i}">${Object.entries(M).map(([k,v])=>`<option value="${k}" ${q.m===k?'selected':''}>${v}</option>`).join('')}</select>
+       <select class="std" data-qd="${i}"><option value="max" ${q.d==='max'?'selected':''}>最高</option><option value="min" ${q.d==='min'?'selected':''}>最低</option></select>
        <span class="mut">得分</span>
        <input type="number" min="1" max="100" value="${q.pts}" data-qp="${i}">
        <div style="flex:1"></div>
@@ -223,10 +243,9 @@ const views={
   </section>`
  },
 
- // === 其他頁面維持排版優化 ===
  setup(){const host=!S.host||S.host===me;return `<section><h2>大廳資訊 (${esc(room)})</h2><div class="row"><input type="text" value="${esc(location.origin)}/?room=${esc(room)}" readonly onclick="this.select()" style="color:var(--mut)"><button class="g" data-a="leave">切換房間</button><button class="g" data-a="quit">退出房間</button></div></section>
   <section><h2>參戰名單</h2>${S.players.map((p,i)=>p.id===me?`<div class="row" style="background:var(--bg); padding:8px; border-radius:4px;"><input type="text" value="${esc(p.name)}" data-name="${i}"><label class="chip ${p.on?'on':''}"><input type="checkbox" data-on="${i}" ${p.on?'checked':''}>我這場有打</label></div>`:`<div class="row" style="padding:8px;"><span style="flex:1; font-weight:bold;">${esc(p.name)}</span><span class="mut">${p.on?'🟢 參戰中':'⚪ 休息'}</span>${host?`<button class="g" data-rm="${i}">踢除</button>`:''}</div>`).join('')||'<p class="mut">尚無玩家。</p>'}
-  ${host?`<div class="row" style="margin-top:16px; border-top:1px solid var(--line); padding-top:16px;"><span class="mut">伺服器:</span><select data-region="1">${['ap','na','eu','kr','br','latam'].map(r=>`<option ${S.region===r?'selected':''}>${r}</option>`).join('')}</select></div>`:''}</section>
+  ${host?`<div class="row" style="margin-top:16px; border-top:1px solid var(--line); padding-top:16px;"><span class="mut">伺服器:</span><select class="std" data-region="1">${['ap','na','eu','kr','br','latam'].map(r=>`<option ${S.region===r?'selected':''}>${r}</option>`).join('')}</select></div>`:''}</section>
   <section><h2>房間總積分</h2>${lb(S.total,S.players.map(p=>p.id))}${host?`<div style="margin-top:16px;"><button class="g" data-a="reset">⚠️ 重置所有分數</button></div>`:''}</section>`},
  
  result(){
@@ -238,12 +257,12 @@ const views={
   <section><h2>本局獲得積分</h2>${lb(L.sc,L.ids)}</section>`}
 };
 
+// 點擊事件 (分頁、按鈕)
 document.addEventListener('click',async e=>{
- const t=e.target.closest('[data-t],[data-q],[data-a],[data-del],[data-rm]');if(!t)return;
+ const t=e.target.closest('[data-t],[data-a],[data-del],[data-rm]');if(!t)return;
  const d=t.dataset;
  if(d.t)tab=d.t;
  else if(d.me!==undefined){me=d.me;ls.set('vp_me_'+room,me)}
- else if(d.q){preds[me]={...(preds[me]||{}),[d.q]:d.o};up('preds',{room,player_id:me,answers:preds[me]})}
  else if(d.del){S.qs.splice(+d.del,1);push()}
  else if(d.rm){S.players.splice(+d.rm,1);push()}
  else if(d.a==='join'){await joinRoom(document.getElementById('rid').value);return}
@@ -256,9 +275,17 @@ document.addEventListener('click',async e=>{
  else if(d.a==='sim'){check(true);return}
  render();
 });
+
+// 改變事件 (下拉選單、輸入框)
 document.addEventListener('change',e=>{
  const d=e.target.dataset,v=e.target.value;
- if(d.name!==undefined)S.players[d.name].name=v;
+ if(d.q!==undefined){ // 當玩家透過下拉選單選擇預測時
+   preds[me]={...(preds[me]||{}),[d.q]:v};
+   up('preds',{room,player_id:me,answers:preds[me]});
+   render();
+   return;
+ }
+ else if(d.name!==undefined)S.players[d.name].name=v;
  else if(d.on!==undefined)S.players[d.on].on=e.target.checked;
  else if(d.region!==undefined)S.region=v;
  else if(d.qon!==undefined)S.qs[d.qon].on=e.target.checked;
@@ -270,6 +297,7 @@ document.addEventListener('change',e=>{
  else return;
  push();render();
 });
+
 setInterval(async()=>{
  if(!S||!room)return;
  try{if(await pull()&&!document.activeElement.matches('input:not([type=checkbox]),select'))render()}catch(e){}
