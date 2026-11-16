@@ -78,7 +78,8 @@ const nm=id=>{const p=S.players.find(x=>x.id===id);return p?esc(p.name.split('#'
 const msg=t=>{const e=document.getElementById('msg');if(e)e.textContent=t};
 
 async function pull(force){
- const [a,b]=await Promise.all([rest(`rooms?code=eq.${room}&select=state`).then(r=>r.json()),rest(`preds?room=eq.${room}&select=player_id,answers`).then(r=>r.json())]);
+ const get=async p=>{const j=await (await rest(p)).json();if(!Array.isArray(j))throw new Error(j.message||j.hint||JSON.stringify(j));return j};
+ const [a,b]=await Promise.all([get(`rooms?code=eq.${room}&select=state`),get(`preds?room=eq.${room}&select=player_id,answers`)]);
  const s=JSON.stringify([a,b]);if(s===sig&&!force)return false;
  sig=s;if(a[0])S=a[0].state;preds={};b.forEach(x=>preds[x.player_id]=x.answers);return true;
 }
