@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
       const list = (j.data || []).filter(x => x.metadata && x.players).sort((a, b) => Date.parse(b.metadata.started_at) - Date.parse(a.metadata.started_at));
       if (!list.length) return res.json({ ok: false, msg: 'HenrikDev 查不到最近的比賽,請確認 Riot ID 與地區' });
       const nk = p => p.name.trim().toLowerCase();
-      const inM = x => on.filter(p => x.players.some(o => key(o) === nk(p)));
+      const inM = x => on.filter(p => !p.fake && x.players.some(o => key(o) === nk(p)));
       const m = list.find(x => !S.done.includes(x.metadata.match_id) && (loose || Date.parse(x.metadata.started_at) > since) && inM(x).length >= 2);
       if (!m) {
         const x = list[0], mode = (x.metadata.queue && x.metadata.queue.name) || '未知模式';
@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
       }
       mid = m.metadata.match_id;
       ps = inM(m);
-      absent = on.filter(p => !ps.includes(p)).map(p => p.name.split('#')[0]);
+      absent = on.filter(p => !p.fake && !ps.includes(p)).map(p => p.name.split('#')[0]);
       const R = (m.rounds || []).length || 1, first = {}, byR = {};
       (m.kills || []).forEach(k => { const b = byR[k.round]; if (!b || k.time_in_round_in_ms < b.time_in_round_in_ms) byR[k.round] = k; });
       Object.values(byR).forEach(k => { const id = k.killer && k.killer.puuid; if (id) first[id] = (first[id] || 0) + 1; });
@@ -68,6 +68,11 @@ module.exports = async (req, res) => {
     const del = await sb(`preds?room=eq.${room}`, { method: 'DELETE', headers: { Prefer: 'return=representation' } }).then(r => r.json());
     if (!del.length) return res.json({ ok: false, msg: '已被其他人結算' });
     const pr = {}; del.forEach(x => pr[x.player_id] = x.answers);
+    if (sim) S.players.filter(p => p.fake && p.on).forEach(p => {   // 假玩家:模擬時自動隨機猜題
+      const a = {};
+      S.qs.filter(q => q.on).forEach(q => { a[q.id] = q.t === 'th' ? (Math.random() < 0.5 ? 'y' : 'n') : ps[Math.floor(Math.random() * ps.length)].id; });
+      pr[p.id] = a;
+    });
 
     const out = [], sc = {}; ps.forEach(p => sc[p.id] = 0);
     S.qs.filter(q => q.on).forEach(q => {
