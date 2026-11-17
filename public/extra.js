@@ -4,6 +4,8 @@ Object.assign(M, { dd: 'DDΔ(每回合傷害差)', kdiff: '擊殺差(K−D)' });
 const sg = (v, d) => (v > 0 ? '+' : '') + v.toFixed(d);
 const fmt2 = (m, v) => m === 'dd' ? sg(v, 1) : m === 'kdiff' ? sg(Math.round(v), 0) : fmt(m, v);
 const pname = id => { const p = S.players.find(x => x.id === id); return p ? esc(p.name.split('#')[0]) : '(未選擇)'; };
+const effHost = () => S.players.some(p => p.id === S.host) ? S.host : (S.players[0] || {}).id;
+const isHost = () => !S.host || effHost() === me;
 const qText = q => q.t === 'th' ? `${pname(q.target)} 的${M[q.m]}會超過 ${q.n} 嗎?` : esc(q.text);
 
 const seen = () => ls.get('vp_seen_' + room);
@@ -50,8 +52,22 @@ views.pred = () => {
     <p class="mut" id="msg">送出預測後，系統只會結算在那之後開打的比賽。</p></section>`;
 };
 
+views.setup = () => {
+  const host = isHost(), eh = effHost();
+  const row = (p, i) => p.id === me
+    ? `<div class="row" style="background:var(--bg);padding:8px;border-radius:4px;"><input type="text" value="${esc(p.name)}" data-name="${i}"><label class="chip ${p.on ? 'on' : ''}"><input type="checkbox" data-on="${i}" ${p.on ? 'checked' : ''}>我這場有打</label>${p.id === eh ? '<span title="房主">👑</span>' : ''}</div>`
+    : `<div class="row" style="padding:8px;"><span style="flex:1;font-weight:bold;">${p.id === eh ? '👑 ' : ''}${p.fake ? '🤖 ' : ''}${esc(p.name)}</span>
+       ${host && p.fake ? `<label class="chip ${p.on ? 'on' : ''}"><input type="checkbox" data-on="${i}" ${p.on ? 'checked' : ''}>參戰</label>` : `<span class="mut">${p.on ? '🟢 參戰中' : '⚪ 休息'}</span>`}
+       ${host && !p.fake ? `<button class="g" data-hostto="${i}">設為房主</button>` : ''}${host ? `<button class="g" data-rm="${i}">踢除</button>` : ''}</div>`;
+  return `<section><h2>大廳資訊 (${esc(room)})</h2><div class="row"><input type="text" value="${esc(location.origin)}/?room=${esc(room)}" readonly onclick="this.select()" style="color:var(--mut)"><button class="g" data-a="leave">切換房間</button><button class="g" data-a="quit">退出房間</button></div></section>
+  <section><h2>參戰名單</h2>${S.players.map(row).join('') || '<p class="mut">尚無玩家。</p>'}
+  ${host ? `<div class="row" style="margin-top:16px;border-top:1px solid var(--line);padding-top:16px;"><span class="mut">伺服器:</span><select class="std" data-region="1">${['ap', 'na', 'eu', 'kr', 'br', 'latam'].map(r => `<option ${S.region === r ? 'selected' : ''}>${r}</option>`).join('')}</select><div style="flex:1"></div><button class="g" data-a="addfake">+ 新增假玩家(測試用)</button></div>
+  <p class="mut">假玩家只能搭配「模擬測試」:結算時會自動幫他們隨機猜題、產生數據。</p>` : ''}</section>
+  <section><h2>房間總積分</h2>${lb(S.total, S.players.map(p => p.id))}${host ? `<div style="margin-top:16px;"><button class="g" data-a="reset">⚠️ 重置所有分數</button></div>` : ''}</section>`;
+};
+
 views.qs = () => {
-  if (S.host && S.host !== me) return `<section><h2>題目清單</h2>${S.qs.filter(q => q.on).map(q => `<div class="admin-q"><b>${qText(q)}</b> <span class="mut">(${q.pts} 分)</span></div>`).join('')}<p class="mut">⚠️ 只有房主 (${nm(S.host)}) 可以編輯題目。</p></section>`;
+  if (!isHost()) return `<section><h2>題目清單</h2>${S.qs.filter(q => q.on).map(q => `<div class="admin-q"><b>${qText(q)}</b> <span class="mut">(${q.pts} 分)</span></div>`).join('')}<p class="mut">⚠️ 只有房主 (${nm(effHost())}) 可以編輯題目。</p></section>`;
   const mOpts = q => Object.entries(M).map(([k, v]) => `<option value="${k}" ${q.m === k ? 'selected' : ''}>${v}</option>`).join('');
   return `<section><h2>管理預測題目</h2><p class="mut" style="margin-bottom:16px;">排名題:誰的數值最高或最低。門檻題:某人的數值有沒有超過 N。</p>
   ${S.qs.map((q, i) => `<div class="admin-q">
@@ -81,6 +97,12 @@ check = async function (sim, loose) {
 document.addEventListener('click', e => {
   const a = e.target.closest('[data-a]'); if (!a) return;
   if (a.dataset.a === 'addth') { S.qs.push({ id: 'q' + Date.now(), t: 'th', target: (S.players[0] || {}).id || '', m: 'kills', n: 15, pts: 10, on: true }); push(); render(); }
+  else if (a.dataset.a === 'addfake') {
+    if (S.players.length >= 10) return;
+    let n = S.players.filter(p => p.fake).length + 1, name;
+    do { name = `假玩家${n++}#TEST`; } while (S.players.some(p => p.name === name));
+    S.players.push({ id: 'f' + Math.random().toString(36).slice(2, 8), name, on: true, fake: true }); push(); render();
+  }
   else if (a.dataset.a === 'loose') check(false, true);
 });
 document.addEventListener('change', e => {
@@ -97,5 +119,10 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-bet]'); if (!b || b.disabled) return;
   const m = { ...(preds[me] || {}) }; m._bet = m._bet === b.dataset.bet ? '' : b.dataset.bet;
   preds[me] = m; up('preds', { room, player_id: me, answers: m }); render();
+});
+document.addEventListener('click', e => {
+  const h = e.target.closest('[data-hostto]'); if (!h) return;
+  const p = S.players[+h.dataset.hostto]; if (!p || !confirm(`確定把房主轉交給 ${p.name.split('#')[0]}?你會失去房主權限。`)) return;
+  S.host = p.id; push(); render();
 });
 })();
