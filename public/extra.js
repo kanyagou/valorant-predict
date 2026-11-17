@@ -25,6 +25,13 @@ const effHost = () => S.players.some(p => p.id === S.host) ? S.host : (S.players
 const isHost = () => !S.host || effHost() === me;
 const qText = q => { if (q.t !== 'th') return esc(q.text); const p = S.players.find(x => x.id === q.target); return `${p ? esc(label(p)) : '(未選擇)'} 的${M[q.m]}會超過 ${q.n} 嗎?`; };
 const post = b => fetch('/api/settle', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ room, ...b }) }).then(r => r.json());
+const canEdit = () => isHost() || !!((S.players.find(p => p.id === me) || {}).mgr);
+let AG = [], pick = {};
+const agentImg = qid => {
+  if (!AG.length) return '';
+  if (!pick[qid]) { const used = Object.values(pick), free = AG.filter(x => !used.includes(x)), pool = free.length ? free : AG; pick[qid] = pool[Math.floor(Math.random() * pool.length)]; }
+  return `<img src="${pick[qid]}" alt="" onerror="this.style.display='none'">`;
+};
 const seen = () => ls.get('vp_seen_' + room);
 const pt = n => n > 0 ? '+' + n : String(n);
 
@@ -71,7 +78,7 @@ const resCard = r => {
   const line = th ? `實際 <b style="color:var(--acc)">${fmt2(r.q.m, r.val)}</b>,${r.win[0] === 'y' ? '超過' : '沒超過'} ${r.q.n}`
     : `答案 <b style="color:var(--acc)">${r.win.map(dn).join('、')}</b>(${M[r.q.m]} ${fmt2(r.q.m, r.val)})`;
   const rows = Object.entries(r.picks || {}).map(([id, x]) => `<div class="row" style="margin:0 0 4px;font-size:14px;"><span style="flex:1">${dn(id)} 選 ${th ? (x.a === 'y' ? '會超過' : '不會') : dn(x.a)} ${x.solo ? '👁' : ''}${x.bet ? '😈' : ''}</span><span class="${x.ok ? 'hit' : 'mut'}">${x.ok ? '✓ ' : '✗ '}${pt(x.pts)}</span></div>`).join('') || '<p class="mut">沒有人回答這題。</p>';
-  return `<div class="pick-card" style="border-color:${my ? (my.pts > 0 ? 'var(--ok)' : 'var(--acc)') : 'var(--line)'}"><div class="pick-img"><img src="${qImg(r.q.m)}" alt="Agent"></div>
+  return `<div class="pick-card" style="border-color:${my ? (my.pts > 0 ? 'var(--ok)' : 'var(--acc)') : 'var(--line)'}"><div class="pick-img">${agentImg(r.q.id)}</div>
     <div class="pick-header"><div class="pick-title">${qText(r.q)}</div><div class="pick-pts">${r.q.pts} PTS</div></div>
     <p style="margin:0 0 10px;font-size:14px;">${line}</p>${rows}</div>`;
 };
@@ -90,7 +97,7 @@ views.pred = () => {
   if (!ps.some(p => p.id === me)) return `<section><h2>你這場未參戰</h2><p class="mut">請至「房間大廳」勾選「我這場有打」才能參與預測。</p></section>`;
   const mine = preds[me] || {};
   return `<section style="background:transparent;border:0;padding:0;box-shadow:none;">
-    <div style="display:flex;justify-content:space-between;align-items:center;"><h2 style="margin:0;">水晶球預測</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;"><h2 style="margin:0;">大家快來預測</h2>
     <span class="mut">已提交: ${ps.filter(p => preds[p.id]).map(p => dn(p.id)).join('、') || '無'}</span></div>${rules}
     ${lk ? `<p style="color:var(--acc);font-weight:700;margin:8px 0 0;">🔒 下好離手!預測已鎖定,打完比賽後按「結算最新比賽」。</p>` : ''}
     <div class="pick-grid">${qs.map(q => {
@@ -98,7 +105,7 @@ views.pred = () => {
       const opts = q.t === 'th'
         ? `<option value="y" ${mine[q.id] === 'y' ? 'selected' : ''}>會超過 ${q.n}</option><option value="n" ${mine[q.id] === 'n' ? 'selected' : ''}>不會(${q.n} 以下)</option>`
         : ps.map(o => `<option value="${o.id}" ${mine[q.id] === o.id ? 'selected' : ''}>${esc(label(o))}</option>`).join('');
-      return `<div class="pick-card ${mine[q.id] ? 'answered' : ''}"><div class="pick-img"><img src="${qImg(q.m)}" alt="Agent"></div>
+      return `<div class="pick-card ${mine[q.id] ? 'answered' : ''}"><div class="pick-img">${agentImg(q.id)}</div>
         <div class="pick-header"><div class="pick-title">${qText(q)}</div><div class="pick-pts">${q.pts} PTS</div></div>
         <select class="pick-select" data-q="${q.id}" ${lk ? 'disabled' : ''}><option value="" disabled ${!mine[q.id] ? 'selected' : ''}>▼ 點擊鎖定答案...</option>${opts}</select>
         <button class="g" data-bet="${q.id}" ${mine[q.id] && !lk ? '' : 'disabled'} style="margin-top:10px;width:100%;${bet ? 'border-color:var(--acc);color:var(--acc);font-weight:700;' : ''}">😈 ${bet ? '惡魔契約已簽' : '簽惡魔契約'}</button></div>`;
@@ -113,7 +120,7 @@ views.pred = () => {
 
 /* ---- 題目管理(全數據) ---- */
 views.qs = () => {
-  if (!isHost()) return `<section><h2>題目清單</h2>${S.qs.filter(q => q.on).map(q => `<div class="admin-q"><b>${qText(q)}</b> <span class="mut">(${q.pts} 分)</span></div>`).join('')}<p class="mut">⚠️ 只有房主 (${dn(effHost())}) 可以編輯題目。</p></section>`;
+  if (!canEdit()) return `<section><h2>題目清單</h2>${S.qs.filter(q => q.on).map(q => `<div class="admin-q"><b>${qText(q)}</b> <span class="mut">(${q.pts} 分)</span></div>`).join('')}<p class="mut">⚠️ 只有房主 (${dn(effHost())}) 或被房主授權的人可以編輯題目。</p></section>`;
   const mOpts = q => GROUPS.map(([g, ks]) => `<optgroup label="${g}">${ks.map(k => `<option value="${k}" ${q.m === k ? 'selected' : ''}>${M[k]}</option>`).join('')}</optgroup>`).join('');
   return `<section><h2>管理預測題目</h2><p class="mut" style="margin-bottom:16px;">排名題:誰的數值最高或最低。門檻題:某人的數值有沒有超過 N(例如 小明的 Vandal 擊殺數超過 5)。</p>
   ${S.qs.map((q, i) => `<div class="admin-q">
@@ -134,15 +141,16 @@ views.qs = () => {
 views.setup = () => {
   const host = isHost(), eh = effHost();
   const row = (p, i) => p.id === me
-    ? `<div class="row" style="background:var(--bg);padding:8px;border-radius:4px;"><input type="text" value="${esc(p.name)}" data-name="${i}" aria-label="Riot ID"><input type="text" value="${esc(p.nick || '')}" maxlength="12" placeholder="暱稱" data-nick="${i}" aria-label="暱稱" style="max-width:120px"><label class="chip ${p.on ? 'on' : ''}"><input type="checkbox" data-on="${i}" ${p.on ? 'checked' : ''}>我這場有打</label>${p.id === eh ? '<span title="房主">👑</span>' : ''}</div>`
-    : `<div class="row" style="padding:8px;"><span style="flex:1;"><b>${p.id === eh ? '👑 ' : ''}${p.fake ? '🤖 ' : ''}${esc(label(p))}</b> <span class="mut">${esc(p.name)}</span></span>
+    ? `<div class="row" style="background:var(--bg);padding:8px;border-radius:4px;"><input type="text" value="${esc(p.name)}" data-name="${i}" aria-label="Riot ID"><input type="text" value="${esc(p.nick || '')}" maxlength="12" placeholder="暱稱" data-nick="${i}" aria-label="暱稱" style="max-width:120px"><label class="chip ${p.on ? 'on' : ''}"><input type="checkbox" data-on="${i}" ${p.on ? 'checked' : ''}>我這場有打</label>${p.id === eh ? '<span title="房主">👑</span>' : ''}${p.mgr ? '<span title="題目管理權限">✏️</span>' : ''}</div>`
+    : `<div class="row" style="padding:8px;"><span style="flex:1;"><b>${p.id === eh ? '👑 ' : ''}${p.fake ? '🤖 ' : ''}${p.mgr ? '✏️ ' : ''}${esc(label(p))}</b> <span class="mut">${esc(p.name)}</span></span>
        ${host && p.fake ? `<label class="chip ${p.on ? 'on' : ''}"><input type="checkbox" data-on="${i}" ${p.on ? 'checked' : ''}>參戰</label>` : `<span class="mut">${p.on ? '🟢 參戰中' : '⚪ 休息'}</span>`}
-       ${host && !p.fake ? `<button class="g" data-hostto="${i}">設為房主</button>` : ''}${host ? `<button class="g" data-rm="${i}">踢除</button>` : ''}</div>`;
+       ${host && !p.fake ? `<button class="g" data-mgr="${i}">${p.mgr ? '收回題目權限' : '給予題目權限'}</button><button class="g" data-hostto="${i}">設為房主</button>` : ''}${host ? `<button class="g" data-rm="${i}">踢除</button>` : ''}</div>`;
   return `<section><h2>大廳資訊 (${esc(room)})</h2><div class="row"><input type="text" value="${esc(location.origin)}/?room=${esc(room)}" readonly onclick="this.select()" style="color:var(--mut)"><button class="g" data-a="leave">切換房間</button><button class="g" data-a="quit">退出房間</button></div></section>
   <section><h2>參戰名單</h2>${S.players.map(row).join('') || '<p class="mut">尚無玩家。</p>'}
   ${host ? `<div class="row" style="margin-top:16px;border-top:1px solid var(--line);padding-top:16px;"><span class="mut">伺服器:</span><select class="std" data-region="1">${['ap', 'na', 'eu', 'kr', 'br', 'latam'].map(r => `<option ${S.region === r ? 'selected' : ''}>${r}</option>`).join('')}</select><div style="flex:1"></div><button class="g" data-a="addfake">+ 新增假玩家(測試用)</button></div>
   <p class="mut">假玩家只能搭配「模擬測試」:結算時會自動幫他們隨機猜題、產生數據。</p>` : ''}</section>
-  <section><h2>房間總積分</h2>${lb(S.total, S.players.map(p => p.id))}${host ? `<div style="margin-top:16px;"><button class="g" data-a="reset">⚠️ 重置所有分數</button></div>` : ''}</section>`;
+  <section><h2>房間總積分</h2>${lb(S.total, S.players.map(p => p.id))}${host ? `<div class="row" style="margin-top:16px;"><button class="g" data-a="resetscore">重置所有分數</button><button class="g" data-a="clearplayers">⚠️ 清空所有玩家</button></div>
+  <p class="mut">重置分數:只清空積分與上一場結果,玩家和題目保留。清空玩家:移除房主以外的所有人(含假玩家),題目保留。</p>` : ''}</section>`;
 };
 
 delete tabs.result;
@@ -168,6 +176,16 @@ document.addEventListener('click', async e => {
       S.players.push({ id: 'f' + Math.random().toString(36).slice(2, 8), name, on: true, fake: true }); push(); render();
     }
     else if (k === 'loose') check(false, true);
+    else if (k === 'resetscore') {
+      if (!isHost() || !confirm('確定重置所有分數?玩家和題目會保留。')) return;
+      S.total = {}; S.last = null; push(); render();
+    }
+    else if (k === 'clearplayers') {
+      if (!isHost() || !confirm('確定清空所有玩家?房主以外的人都會被移除,他們需要重新加入。題目會保留。')) return;
+      const keep = S.players.find(p => p.id === me);
+      S.players = keep ? [keep] : []; S.total = {}; S.last = null; S.locked = false; S.lockedAt = 0; S.snap = null;
+      await push(); await rest(`preds?room=eq.${room}`, { method: 'DELETE' }); preds = {}; render();
+    }
     else if (k === 'lock') {
       const no = act().filter(p => !p.fake && !preds[p.id]).map(label);
       if (!Object.keys(preds).length) { msg('還沒有人送出預測。'); return; }
@@ -176,9 +194,11 @@ document.addEventListener('click', async e => {
       try { const j = await post({ action: 'lock' }); if (j.ok) { await pull(true); render(); } else msg(j.msg); } catch (er) { msg('失敗:' + er.message); }
     }
     else if (k === 'unlock') { try { await post({ action: 'unlock' }); await pull(true); render(); } catch (er) { msg('失敗:' + er.message); } }
-    else if (k === 'next' && S.last) { ls.set('vp_seen_' + room, String(S.last.at)); render(); }
+    else if (k === 'next' && S.last) { ls.set('vp_seen_' + room, String(S.last.at)); pick = {}; render(); }
     return;
   }
+  const g = e.target.closest('[data-mgr]');
+  if (g) { if (!isHost()) return; const p = S.players[+g.dataset.mgr]; if (!p) return; p.mgr = !p.mgr; push(); render(); return; }
   const h = e.target.closest('[data-hostto]');
   if (h) {
     const p = S.players[+h.dataset.hostto];
@@ -198,4 +218,8 @@ document.addEventListener('change', e => {
   else return;
   push(); render();
 });
+const sub = document.querySelector('.sub');
+if (sub) sub.textContent = sub.textContent.replace(/^\s*Pick.em Style\s*[-－—–]\s*/i, '');
+fetch('https://valorant-api.com/v1/agents?isPlayableCharacter=true').then(r => r.json())
+  .then(j => { AG = (j.data || []).map(a => a.displayIcon).filter(Boolean); if (S && joined()) render(); }).catch(() => {});
 })();
